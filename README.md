@@ -136,4 +136,6 @@ This driver is under the MIT Licence.
 
 ## Author
 
-This driver was created by the [TNY Robotics](https://tny-robotics.com) team, for any questions or suggestions, please contact us at [contact@furwaz.com](mailto:contact@furwaz.com).
+This driver was created by the [TNY Robotics](https://tny-robotics.com) team.
+
+For any questions or suggestions, please contact us at [contact@tny-robotics.com](mailto:contact@tny-robotics.com).
