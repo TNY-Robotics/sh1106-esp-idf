@@ -17,11 +17,13 @@
  * Version: 1.0
  */
 
- #include "freertos/FreeRTOS.h"
+#include <string.h>
+#include "freertos/FreeRTOS.h"
+#include "driver/i2c_master.h"
 #include "esp_lcd_io_i2c.h"
-#include "esp_lcd_panel_sh1106.h"
-#include "esp_lcd_panel_io.h"
 #include "esp_lcd_panel_ops.h"
+#include "esp_lcd_panel_io.h"
+#include "esp_lcd_panel_sh1106.h"
 
 #define I2C_SDA_GPIO GPIO_NUM_21
 #define I2C_SCL_GPIO GPIO_NUM_22
@@ -56,7 +58,7 @@ void app_main(void)
     // Create the i2c io handle
     esp_lcd_panel_io_handle_t io_handle = NULL;
     esp_lcd_panel_io_i2c_config_t io_config = ESP_SH1106_DEFAULT_IO_CONFIG;
-    ESP_ERROR_CHECK(esp_lcd_new_panel_io_i2c(*i2c_bus_handle, &io_config, &io_handle));
+    ESP_ERROR_CHECK(esp_lcd_new_panel_io_i2c(i2c_bus_handle, &io_config, &io_handle));
 
 
     /* SCREEN CONFIGURATION */
@@ -89,8 +91,8 @@ void app_main(void)
     /* SCREEN PIXEL TEST */
 
     // Create a buffer to hold the screen data
-    uint8_t buffer_data[SH1106_SCREEN_SIZE];
-    memset(buffer_data, 0, SH1106_SCREEN_SIZE);
+    uint8_t buffer_data[SH1106_BUFFER_SIZE];
+    memset(buffer_data, 0, SH1106_BUFFER_SIZE);
 
     // Just turn on the first top-left pixel
     // NOTE : Refer to driver README.md file for more information about the screen buffer format
