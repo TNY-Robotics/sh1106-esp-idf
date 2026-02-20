@@ -25,8 +25,6 @@
 #include "esp_lcd_panel_io.h"
 #include "esp_lcd_panel_sh1106.h"
 
-#define I2C_SDA_GPIO GPIO_NUM_21
-#define I2C_SCL_GPIO GPIO_NUM_22
 #define I2C_HOST I2C_NUM_0
 
 #ifdef __cplusplus
@@ -39,8 +37,8 @@ void app_main(void)
     // i2c bus configuration
     i2c_master_bus_config_t bus_config = {
         .i2c_port = I2C_HOST,               // I2C port number
-        .sda_io_num = I2C_SDA_GPIO,         // GPIO number for I2C sda signal
-        .scl_io_num = I2C_SCL_GPIO,         // GPIO number for I2C scl signal
+        .sda_io_num = CONFIG_I2C_SDA_GPIO,  // GPIO number for I2C sda signal, set from "idf menuconfig"
+        .scl_io_num = CONFIG_I2C_SCL_GPIO,  // GPIO number for I2C scl signal, set from "idf menuconfig"
         .clk_source = I2C_CLK_SRC_DEFAULT,  // I2C clock source, just use the default
         .glitch_ignore_cnt = 7,             // glitch filter, again, just use the default
         .intr_priority = 0,                 // interrupt priority, default to 0
