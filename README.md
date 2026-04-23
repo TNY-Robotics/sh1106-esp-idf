@@ -139,3 +139,7 @@ This driver is under the MIT Licence.
 This driver was created by the [TNY Robotics](https://tny-robotics.com) team.
 
 For any questions or suggestions, please contact us at [contact@tny-robotics.com](mailto:contact@tny-robotics.com).
+
+### Thanks
+
+Special thank to [@ambiguous-fix](https://github.com/ambiguous-fix) for their contributions to the driver (partial screen updates).

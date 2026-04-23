@@ -17,14 +17,14 @@
  * Version: 1.0
  */
 
- #include "freertos/FreeRTOS.h"
+#include <string.h>
+#include "freertos/FreeRTOS.h"
+#include "driver/i2c_master.h"
 #include "esp_lcd_io_i2c.h"
-#include "esp_lcd_panel_sh1106.h"
-#include "esp_lcd_panel_io.h"
 #include "esp_lcd_panel_ops.h"
+#include "esp_lcd_panel_io.h"
+#include "esp_lcd_panel_sh1106.h"
 
-#define I2C_SDA_GPIO GPIO_NUM_21
-#define I2C_SCL_GPIO GPIO_NUM_22
 #define I2C_HOST I2C_NUM_0
 
 #ifdef __cplusplus
@@ -37,8 +37,8 @@ void app_main(void)
     // i2c bus configuration
     i2c_master_bus_config_t bus_config = {
         .i2c_port = I2C_HOST,               // I2C port number
-        .sda_io_num = I2C_SDA_GPIO,         // GPIO number for I2C sda signal
-        .scl_io_num = I2C_SCL_GPIO,         // GPIO number for I2C scl signal
+        .sda_io_num = CONFIG_I2C_SDA_GPIO,  // GPIO number for I2C sda signal, set from "idf menuconfig"
+        .scl_io_num = CONFIG_I2C_SCL_GPIO,  // GPIO number for I2C scl signal, set from "idf menuconfig"
         .clk_source = I2C_CLK_SRC_DEFAULT,  // I2C clock source, just use the default
         .glitch_ignore_cnt = 7,             // glitch filter, again, just use the default
         .intr_priority = 0,                 // interrupt priority, default to 0
@@ -56,7 +56,7 @@ void app_main(void)
     // Create the i2c io handle
     esp_lcd_panel_io_handle_t io_handle = NULL;
     esp_lcd_panel_io_i2c_config_t io_config = ESP_SH1106_DEFAULT_IO_CONFIG;
-    ESP_ERROR_CHECK(esp_lcd_new_panel_io_i2c(*i2c_bus_handle, &io_config, &io_handle));
+    ESP_ERROR_CHECK(esp_lcd_new_panel_io_i2c(i2c_bus_handle, &io_config, &io_handle));
 
 
     /* SCREEN CONFIGURATION */
@@ -86,16 +86,37 @@ void app_main(void)
     // Turn on the screen (Easier to see something, right?)
     ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_handle, true));
 
+    
     /* SCREEN PIXEL TEST */
 
     // Create a buffer to hold the screen data
-    uint8_t buffer_data[SH1106_SCREEN_SIZE];
-    memset(buffer_data, 0, SH1106_SCREEN_SIZE);
+    uint8_t buffer_data[SH1106_BUFFER_SIZE];
+    memset(buffer_data, 0, SH1106_BUFFER_SIZE);
 
-    // Just turn on the first top-left pixel
+    // Just turn on the first top-left pixel and the last bottom-right pixel to show individual pixels control
     // NOTE : Refer to driver README.md file for more information about the screen buffer format
-    buffer_data[0] = 0b10000000;
+    buffer_data[0] = 0b00000001;
+    buffer_data[SH1106_BUFFER_SIZE - 1] = 0b10000000;
 
     // Send the buffer to the screen
     ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, 0, 0, SH1106_WIDTH, SH1106_HEIGHT, buffer_data));
+    vTaskDelay(pdMS_TO_TICKS(2000)); // wait a bit
+
+
+    // turn all the pixels on
+    memset(buffer_data, 0xFF, SH1106_BUFFER_SIZE);
+    // only update a portion of the screen to show that partial updates work
+    ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, 48, 16, 80, 48, buffer_data));
+    vTaskDelay(pdMS_TO_TICKS(2000)); // wait a bit
+
+
+    // turn all the pixels white using a sliding window and small buffer
+    memset(buffer_data, 0x00, SH1106_BUFFER_SIZE);
+    memset(buffer_data, 0xFF, 8); // only turn on 8x8 pixels at a time to show that small updates work
+    for (int y = 0; y < SH1106_HEIGHT; y += 8) {
+        for (int x = 0; x < SH1106_WIDTH; x += 8) {
+            ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, x, y, x + 8, y + 8, buffer_data));
+            vTaskDelay(pdMS_TO_TICKS(50)); // add a small delay to make the sliding window effect visible
+        }
+    }
 }

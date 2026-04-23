@@ -4,7 +4,7 @@ url: https://github.com/TNY-Robotics/sh1106-esp-idf
 repository: https://github.com/TNY-Robotics/sh1106-esp-idf.git
 issues: https://github.com/TNY-Robotics/sh1106-esp-idf/issues
 maintainers:
-  - "TNY Robotics <contact@furwaz.com>"
+  - "TNY Robotics <contact@tny-robotics.com>"
 tags:
   - sh1106
   - display

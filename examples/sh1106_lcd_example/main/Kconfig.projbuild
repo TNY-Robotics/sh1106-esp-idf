@@ -1,0 +1,12 @@
+menu "sh1106_lcd_example"
+    config I2C_SDA_GPIO
+        int "I2C SDA GPIO Pin"
+        default 21
+        help
+        Specifies the GPIO pin number to be used for the I2C SDA (data) line.
+    config I2C_SCL_GPIO
+        int "I2C SCL GPIO Pin"
+        default 22
+        help
+        Specifies the GPIO pin number to be used for the I2C SCL (clock) line.
+endmenu
