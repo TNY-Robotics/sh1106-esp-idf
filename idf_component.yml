@@ -1,4 +1,4 @@
-version: 1.0.0
+version: 1.0.1
 description: SH1106 ESP-IDF Driver by TNY Robotics
 url: https://github.com/TNY-Robotics/sh1106-esp-idf
 repository: https://github.com/TNY-Robotics/sh1106-esp-idf.git

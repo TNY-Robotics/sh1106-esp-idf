@@ -1,0 +1,20 @@
+name: Upload Component to Registry
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  upload_components:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Upload component to ESP Component Registry
+        uses: espressif/upload-components-ci-action@v1
+        with:
+          namespace: "tny-robotics"
+        env:
+          IDF_COMPONENT_API_TOKEN: ${{ secrets.IDF_COMPONENT_API_TOKEN }}
