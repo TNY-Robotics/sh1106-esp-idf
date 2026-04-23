@@ -1,4 +1,4 @@
-name: Upload Component to Registry
+name: Push component to https://components.espressif.com
 
 on:
   push:
@@ -11,10 +11,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Upload component to ESP Component Registry
-        uses: espressif/upload-components-ci-action@v1
         with:
+          submodules: "recursive"
+
+      - name: Upload component to the component registry
+        uses: espressif/upload-components-ci-action@v2
+        with:
+          components: "sh1106-esp-idf: ." # component_name: directory
           namespace: "tny-robotics"
-        env:
-          IDF_COMPONENT_API_TOKEN: ${{ secrets.IDF_COMPONENT_API_TOKEN }}
+          api_token: ${{ secrets.IDF_COMPONENT_API_TOKEN }}
