@@ -226,17 +226,14 @@ static esp_err_t panel_sh1106_draw_bitmap(esp_lcd_panel_t *panel, int x_start, i
         ESP_LOGE(TAG, "y_start and y_end must be multiples of 8");
         return ESP_ERR_INVALID_ARG;
     }
-    if ((y_end - y_start) % 8 != 0)
-    {
-        ESP_LOGE(TAG, "the height of the bitmap must be a multiple of 8");
-        return ESP_ERR_INVALID_ARG;
-    }
+    
     sh1106_panel_t *sh1106 = __containerof(panel, sh1106_panel_t, base);
     esp_lcd_panel_io_handle_t io = sh1106->io;
 
     const uint16_t sh1106_column_start_offset = 2;
     uint16_t start_column_index = x_start + sh1106_column_start_offset;
-    uint16_t page_length = x_end - x_start;
+    uint16_t window_width = x_end - x_start;
+    uint16_t window_y = 0; // the y coordinate within the window, used to index into color_data
     uint16_t column_addr_low = start_column_index & 0x0F;
     uint16_t column_addr_high = start_column_index >> 4 & 0x0F;
 
@@ -244,7 +241,8 @@ static esp_err_t panel_sh1106_draw_bitmap(esp_lcd_panel_t *panel, int x_start, i
         ESP_RETURN_ON_ERROR(esp_lcd_panel_io_tx_param(io, SH1106_CMD_SET_COLUMN_ADDR_LOW | column_addr_low, NULL, 0), TAG, "io tx param SH1106_CMD_SET_COLUMN_ADDR_LOW failed");
         ESP_RETURN_ON_ERROR(esp_lcd_panel_io_tx_param(io, SH1106_CMD_SET_COLUMN_ADDR_HIGH | column_addr_high, NULL, 0), TAG, "io tx param SH1106_CMD_SET_COLUMN_ADDR_HIGH failed");
         ESP_RETURN_ON_ERROR(esp_lcd_panel_io_tx_param(io, SH1106_CMD_SET_PAGE_ADDR | y, NULL, 0), TAG, "io tx param SH1106_CMD_SET_PAGE_ADDR failed");
-        ESP_RETURN_ON_ERROR(esp_lcd_panel_io_tx_color(io, -1, color_data + x_start + y * SH1106_WIDTH, page_length), TAG, "io tx color failed");
+        ESP_RETURN_ON_ERROR(esp_lcd_panel_io_tx_color(io, -1, color_data + window_y * window_width, window_width), TAG, "io tx color failed");
+        window_y += 1;
     }
     
     return ESP_OK;

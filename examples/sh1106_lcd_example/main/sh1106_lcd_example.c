@@ -86,16 +86,37 @@ void app_main(void)
     // Turn on the screen (Easier to see something, right?)
     ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_handle, true));
 
+    
     /* SCREEN PIXEL TEST */
 
     // Create a buffer to hold the screen data
     uint8_t buffer_data[SH1106_BUFFER_SIZE];
     memset(buffer_data, 0, SH1106_BUFFER_SIZE);
 
-    // Just turn on the first top-left pixel
+    // Just turn on the first top-left pixel and the last bottom-right pixel to show individual pixels control
     // NOTE : Refer to driver README.md file for more information about the screen buffer format
-    buffer_data[0] = 0b10000000;
+    buffer_data[0] = 0b00000001;
+    buffer_data[SH1106_BUFFER_SIZE - 1] = 0b10000000;
 
     // Send the buffer to the screen
     ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, 0, 0, SH1106_WIDTH, SH1106_HEIGHT, buffer_data));
+    vTaskDelay(pdMS_TO_TICKS(2000)); // wait a bit
+
+
+    // turn all the pixels on
+    memset(buffer_data, 0xFF, SH1106_BUFFER_SIZE);
+    // only update a portion of the screen to show that partial updates work
+    ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, 48, 16, 80, 48, buffer_data));
+    vTaskDelay(pdMS_TO_TICKS(2000)); // wait a bit
+
+
+    // turn all the pixels white using a sliding window and small buffer
+    memset(buffer_data, 0x00, SH1106_BUFFER_SIZE);
+    memset(buffer_data, 0xFF, 8); // only turn on 8x8 pixels at a time to show that small updates work
+    for (int y = 0; y < SH1106_HEIGHT; y += 8) {
+        for (int x = 0; x < SH1106_WIDTH; x += 8) {
+            ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(panel_handle, x, y, x + 8, y + 8, buffer_data));
+            vTaskDelay(pdMS_TO_TICKS(50)); // add a small delay to make the sliding window effect visible
+        }
+    }
 }
