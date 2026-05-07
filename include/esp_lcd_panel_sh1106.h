@@ -35,17 +35,17 @@ extern "C" {
 
 #define ESP_SH1106_DEFAULT_IO_CONFIG {\
     .dev_addr = 0x3C,\
-    .on_color_trans_done = NULL,\
-    .user_ctx = NULL,\
+    .scl_speed_hz = 400 * 1000,\
     .control_phase_bytes = 1,\
     .dc_bit_offset = 6,\
     .lcd_cmd_bits = 8,\
     .lcd_param_bits = 8,\
+    .on_color_trans_done = NULL,\
+    .user_ctx = NULL,\
     .flags = {\
         .dc_low_on_data = false,\
         .disable_control_phase = false,\
     },\
-    .scl_speed_hz = 400 * 1000,\
 };
 
 /**
