@@ -18,7 +18,7 @@ git clone https://github.com/TNY-Robotics/sh1106-esp-idf.git components/sh1106
 
 Or add it using the `idf.py` tool :
 ```bash
-idf.py add-dependency "tny-robotics/sh1106-esp-idf^1.0.0"
+idf.py add-dependency "tny-robotics/sh1106-esp-idf^1.0.2"
 ```
 
 ## Usage
